@@ -795,7 +795,7 @@ border-radius:10px;
 </string>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="songList_page">
      <widget class="QLabel" name="label_3">
