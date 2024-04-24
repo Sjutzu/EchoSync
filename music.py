@@ -248,7 +248,7 @@ class Ui_MusicApp(object):
 "}")
         self.playStop_btn.setText("")
         icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap(":/img/utils/images/play.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon5.addPixmap(QtGui.QPixmap(":/img/utils/images/pase.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.playStop_btn.setIcon(icon5)
         self.playStop_btn.setIconSize(QtCore.QSize(24, 24))
         self.playStop_btn.setCheckable(True)
