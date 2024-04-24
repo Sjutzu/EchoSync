@@ -30,8 +30,14 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
         self.clearSong_btn.clicked.connect(self.removeAllSong)
 
         self.playStop_btn.clicked.connect(self.playStopSong)
-        self.loop_btn.clicked.connect(self.muteSong)
-        self.shuffle_btn.clicked.connect(self.unmuteSong)
+
+
+        #volume control
+        self.initialVolume = 50
+        self.currentVolume = self.initialVolume
+        self.pushButton.clicked.connect(self.muteUnmuteSong)
+        self.player.setVolume(self.currentVolume)
+        self.volume_slider.valueChanged.connect(lambda: self.changeVolume())
 
         #changing position of the window
         def moveWindow(event):
@@ -88,17 +94,15 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
 
         except Exception as e:
             print(f"play/stop song error: {e}")
-
-    def muteSong(self):
+    #Mute/Unmute Song
+    def muteUnmuteSong(self):
         try:
-            self.player.setVolume(0)
+            if self.player.volume() == 0:
+                self.player.setVolume(self.initialVolume)  # Jeśli wyciszone, przywróć dźwięk
+            else:
+                self.player.setVolume(0)  # Wycisz, jeśli dźwięk jest włączony
         except Exception as e:
-            print(f"stop playing song: {e}")
-    def unmuteSong(self):
-        try:
-            self.player.setVolume(50)
-        except Exception as e:
-            print(f"stop playing song: {e}")
+            print(f"toggle mute error: {e}")
     def removeSelectedSong(self):
         try:
             currentIndex = self.loadedSong_listWidget.currentRow()
@@ -113,6 +117,13 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
             songs.currentSongList.clear()
         except Exception as e:
             print(f"Remove selected song error {e}")
+
+    def changeVolume(self):
+        try:
+            self.currentVolume = self.volume_slider.value()
+            self.player.setVolume(self.currentVolume)
+        except Exception as e:
+            print(f"Volume change error: {e}")
 
 
 

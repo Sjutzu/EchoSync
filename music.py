@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'main.ui'
+# Form implementation generated from reading ui file 'main2.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -191,12 +191,6 @@ class Ui_MusicApp(object):
         self.volumeValue_label.setGeometry(QtCore.QRect(190, 420, 71, 31))
         self.volumeValue_label.setStyleSheet("color:rgb(255,255,255)")
         self.volumeValue_label.setObjectName("volumeValue_label")
-        self.volume_img = QtWidgets.QLabel(self.centralwidget)
-        self.volume_img.setGeometry(QtCore.QRect(50, 430, 21, 21))
-        self.volume_img.setText("")
-        self.volume_img.setPixmap(QtGui.QPixmap(":/img/utils/images/music-voice.png"))
-        self.volume_img.setScaledContents(True)
-        self.volume_img.setObjectName("volume_img")
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(20, 370, 241, 41))
         font = QtGui.QFont()
@@ -546,17 +540,31 @@ class Ui_MusicApp(object):
 "color:white;\n"
 "border-radius:15px;")
         self.favourites_btn.setObjectName("favourites_btn")
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(50, 420, 31, 31))
+        self.pushButton.setStyleSheet("QPushButton{\n"
+"background-color:rgba(255,255,255,0);\n"
+"}\n"
+"QPushButton:hover{\n"
+"background-color:rgba(255,255,255,100)\n"
+"}")
+        self.pushButton.setText("")
+        icon12 = QtGui.QIcon()
+        icon12.addPixmap(QtGui.QPixmap(":/img/utils/images/music-voice.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton.setIcon(icon12)
+        self.pushButton.setIconSize(QtCore.QSize(32, 32))
+        self.pushButton.setObjectName("pushButton")
         self.background_img.raise_()
         self.overlay_img.raise_()
         self.title_frame.raise_()
         self.frame.raise_()
         self.volume_slider.raise_()
         self.volumeValue_label.raise_()
-        self.volume_img.raise_()
         self.label.raise_()
         self.stackedWidget.raise_()
         self.frame_4.raise_()
         self.frame_2.raise_()
+        self.pushButton.raise_()
         MusicApp.setCentralWidget(self.centralwidget)
         self.actionPlay = QtWidgets.QAction(MusicApp)
         self.actionPlay.setObjectName("actionPlay")
@@ -588,7 +596,7 @@ class Ui_MusicApp(object):
         self.actionSave_All_To_A_Playlist.setObjectName("actionSave_All_To_A_Playlist")
 
         self.retranslateUi(MusicApp)
-        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentIndex(0)
         self.close_btn.clicked.connect(MusicApp.close) # type: ignore
         self.minimize_btn.clicked.connect(MusicApp.showMinimized) # type: ignore
         self.volume_slider.valueChanged['int'].connect(self.volumeValue_label.setNum) # type: ignore
