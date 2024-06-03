@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import *
 from music import Ui_MusicApp
 from PyQt5.QtCore import Qt, QUrl, QTimer
 import songs, eyed3, random
+import db_functs
 
 
 class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
@@ -19,6 +20,9 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
         isShuffled = False
         global isLooped
         isLooped = False
+
+        #Database
+        db_functs.createDBorTable('favourites')
         #self Player
         self.player = QMediaPlayer()
         #removing title bar
