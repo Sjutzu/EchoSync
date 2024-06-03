@@ -342,9 +342,9 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
         try:
             song = songs.currentSongList[currentIndex]
             db_functs.addSongToTable(song=f"{song}", table='favourites')
-            QMessageBox.information(
-                self, 'Add Songs to favourites',
-                f'{os.path.basename(song)} was succesfully added'
-            )
+            #QMessageBox.information(
+             #   self, 'Add Songs to favourites',
+              #  f'{os.path.basename(song)} was succesfully added'
+            #)
         except Exception as e:
             print(f"Adding song to favourites error: {e}")
