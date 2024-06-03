@@ -29,7 +29,7 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(Qt.FramelessWindowHint)
 
-        self.show()
+
 
         #buttons connections
         self.songList_btn.clicked.connect(self.switchToSongList)
@@ -78,6 +78,10 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
         self.loop_btn.clicked.connect(self.checkIfLooped)
         self.shuffle_btn.clicked.connect(self.checkIfShuffled)
 
+        #favourites
+        self.addFavourites_btn.clicked.connect(self.addSongToFavourites)
+
+        self.show()
     # getting location of coursor when some of the mouse button is clicked
     def mousePressEvent(self, event):
         self.initialPosition = event.globalPos()
@@ -323,3 +327,24 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
     def isSongFinished(self, status):
         if status == QMediaPlayer.EndOfMedia:
             self.nextSong()
+
+    #Favourite page
+
+    #add song
+    def addSongToFavourites(self):
+        currentIndex = self.loadedSong_listWidget.currentRow()
+        if currentIndex is None:
+            QMessageBox.information(
+                self,'Add Songs to favourites',
+                'Select a song to add to favourites'
+            )
+            return
+        try:
+            song = songs.currentSongList[currentIndex]
+            db_functs.addSongToTable(song=f"{song}", table='favourites')
+            QMessageBox.information(
+                self, 'Add Songs to favourites',
+                f'{os.path.basename(song)} was succesfully added'
+            )
+        except Exception as e:
+            print(f"Adding song to favourites error: {e}")
