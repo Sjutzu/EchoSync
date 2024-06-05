@@ -211,20 +211,27 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
 
     def defaultNextSong(self):
         try:
-            songIndex = self.loadedSong_listWidget.currentRow()
-            nextIndex = songIndex + 1
-            nextSong = songs.currentSongList[nextIndex]
-            currentMedia = self.player.media()
+            if self.stackedWidget.currentIndex() == 0:
+                currentMedia = self.player.media()
+                audiofile = eyed3.load(currentMedia.canonicalUrl().path()[1:])
+                songIndex = self.loadedSong_listWidget.currentRow()
+                nextIndex = songIndex + 1
+                nextSong = songs.currentSongList[nextIndex]
+                self.loadedSong_listWidget.setCurrentRow(nextIndex)
+            elif self.stackedWidget.currentIndex() == 2:
+                currentMedia = self.player.media()
+                audiofile = eyed3.load(currentMedia.canonicalUrl().path()[1:])
+                songIndex = self.favouritesSong_listWidget.currentRow()
+                nextIndex = songIndex + 1
+                nextSong = songs.favouriteSongsList[nextIndex]
+                self.favouritesSong_listWidget.setCurrentRow(nextIndex)
 
             songUrl = QMediaContent(QUrl.fromLocalFile(nextSong))
 
             self.player.setMedia(songUrl)
             self.player.play()
-            self.loadedSong_listWidget.setCurrentRow(nextIndex)
             self.playStop_btn.setIcon(
                 QIcon(":/img/utils/images/play.png"))  # Update the button icon to indicate playback
-            audiofile = eyed3.load(currentMedia.canonicalUrl().path()[1:])
-
             artistName = "?"
             artistName = audiofile.tag.artist
             self.songName_label.setText(f"{os.path.basename(nextSong)}")
