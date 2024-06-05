@@ -81,6 +81,8 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
 
         #favourites
         self.addFavourites_btn.clicked.connect(self.addSongToFavourites)
+        self.deleteSelected_btn.clicked.connect(self.removeSongFromFavourites)
+        self.clearAll_btn_.clicked.connect(self.removeAllSongFromFavourites)
 
         self.show()
     # getting location of coursor when some of the mouse button is clicked
@@ -334,12 +336,18 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
     #load songs from database
     def loadFavouritesInToApp(self):
         favouriteSongs = db_functs.fetchAllSongsFromTable('favourites')
-        #songs.favouriteSongsList.clear()
-        #self.favouritesSong_listWidget.clear()
+        songs.favouriteSongsList.clear()
+        self.favouritesSong_listWidget.clear()
 
         for favourite in favouriteSongs:
             songs.favouriteSongsList.append(favourite)
-            self.favouritesSong_listWidget.addItem(os.path.basename(favourite))
+            self.favouritesSong_listWidget.addItem(
+                QListWidgetItem(
+                    QIcon(":/img/utils/images/like.png"),
+                    os.path.basename(favourite)
+                )
+
+            )
     #add song
     def addSongToFavourites(self):
         currentIndex = self.loadedSong_listWidget.currentRow()
@@ -358,3 +366,44 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
             #)
         except Exception as e:
             print(f"Adding song to favourites error: {e}")
+
+    #remove song
+    def removeSongFromFavourites(self):
+        if self.favouritesSong_listWidget.count() == 0:
+            QMessageBox.information(
+                self, "Remove Song from Favourites",
+                "Favourites list is empty"
+            )
+            return
+        currentIndex = self.favouritesSong_listWidget.currentRow()
+        if currentIndex is None:
+            QMessageBox.information(
+                self, "Remove Song from Favourites",
+                "Select a song which to remove"
+            )
+            return
+        try:
+            song = songs.favouriteSongsList[currentIndex]
+            db_functs.deleteSongFromTable(song=f"{song}", table='favourites')
+            self.loadFavouritesInToApp()
+        except Exception as e:
+            print(f"Removin from favourites error {e}")
+
+    def removeAllSongFromFavourites(self):
+        if self.favouritesSong_listWidget.count() == 0:
+            QMessageBox.information(
+                self, "Remove Song from Favourites",
+                "Favourites list is empty"
+            )
+            return
+        question = QMessageBox.question(
+            self, "Remove all favourites songs",
+            "This action will remove all songs,\n Do You Want To Continue?",
+            QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel
+        )
+        if question == QMessageBox.Yes:
+            try:
+                db_functs.deleteAllSongsFromTable(table='favourites')
+                self.loadFavouritesInToApp()
+            except Exception as e:
+                print(f"Removin all songs from favourites error {e}")
