@@ -44,6 +44,7 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
         self.playStop_btn.clicked.connect(self.playStopSong)
 
         self.loadedSong_listWidget.itemClicked.connect(self.playSelectedSong)
+        self.favouritesSong_listWidget.itemClicked.connect(self.playSelectedSong)
         #volume control
         self.initialVolume = 50
         self.currentVolume = self.initialVolume
@@ -112,8 +113,12 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
     #play/stop song
     def playStopSong(self):
         try:
-            currentSelection = self.loadedSong_listWidget.currentRow()
-            currentSong = songs.currentSongList[currentSelection]
+            if self.stackedWidget.currentIndex() == 0:
+                currentSelection = self.loadedSong_listWidget.currentRow()
+                currentSong = songs.currentSongList[currentSelection]
+            elif self.stackedWidget.currentIndex() == 2:
+                currentSelection = self.favouritesSong_listWidget.currentRow()
+                currentSong = songs.favouriteSongsList[currentSelection]
             songUrl = QMediaContent(QUrl.fromLocalFile(currentSong))
 
             if self.player.state() == QMediaPlayer.PlayingState:
@@ -179,8 +184,16 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
     def playSelectedSong(self, item):
         try:
             # Get the current row index of the clicked item
-            currentSelection = self.loadedSong_listWidget.currentRow()
-            currentSong = songs.currentSongList[currentSelection]
+            global stopped
+            stopped = False
+
+            if self.stackedWidget.currentIndex() == 0:
+                currentSelection = self.loadedSong_listWidget.currentRow()
+                currentSong = songs.currentSongList[currentSelection]
+            elif self.stackedWidget.currentIndex() == 2:
+                currentSelection = self.favouritesSong_listWidget.currentRow()
+                currentSong = songs.favouriteSongsList[currentSelection]
+
             songUrl = QMediaContent(QUrl.fromLocalFile(currentSong))
             currentMedia = self.player.media()
             self.player.setMedia(songUrl)
@@ -364,6 +377,7 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
              #   self, 'Add Songs to favourites',
               #  f'{os.path.basename(song)} was succesfully added'
             #)
+            self.loadFavouritesInToApp()
         except Exception as e:
             print(f"Adding song to favourites error: {e}")
 
