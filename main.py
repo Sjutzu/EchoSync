@@ -88,6 +88,15 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
 
         #playlists
         self.newPlaylist_btn.clicked.connect(self.newPlaylist)
+        self.loadSelected_btn.clicked.connect(
+            lambda: self.loadPlaylistSongToCurrentList(
+                self.playlist_listWidget.currentItem().text()
+            )
+        )
+        self.removeSelectedPlaylist_btn.clicked.connect(self.deletePlaylist)
+        self.removeAllPlaylist_btn.clicked.connect(self.deleteAllPlaylist)
+        self.addPlaylist_btn.clicked.connect(self.addCurrentSongToPLaylist)
+
 
         self.show()
     # getting location of coursor when some of the mouse button is clicked
@@ -513,3 +522,85 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
             finally:
                 self.loadPlaylists()
 
+    def addToPlaylist(self):
+        options = db_functs.getPlaylistTables()
+        options.remove('favourites')
+        options.insert(0, '--Click to Select--')
+        playlist, _ = PyQt5.QtWidgets.QInputDialog.getItem(
+            self, 'Add song to playlist',
+            'Choose playlist', options, editable=False
+        )
+        if playlist == '--Click to Select--':
+            QMessageBox.information(
+                self, "Add song to playlist" 'No playlist was selected'
+            )
+            return
+        try:
+            currentIndex = self.loadedSong_listWidget.currentRow()
+            song = songs.currentSongList[currentIndex]
+        except Exception as e:
+            QMessageBox.information(self,"Unsuccessfull",'No song was selected')
+        db_functs.addSongToTable(song=song, table=playlist)
+        self.loadPlaylists()
+
+    def addAllSongsToPlaylist(self):
+        options = db_functs.getPlaylistTables()
+        options.remove('favourites')
+        options.insert(0, '--Click to Select--')
+        playlist, _ = PyQt5.QtWidgets.QInputDialog.getItem(
+            self, 'Add song to playlist',
+            'Choose playlist', options, editable=False
+        )
+        if playlist == '--Click to Select--':
+            QMessageBox.information(
+                self, "Add song to playlist" 'No playlist was selected'
+            )
+            return
+        if len(songs.currentSongList) <1:
+            QMessageBox.information(self,"add songs to playlist","Song list is empty")
+            return
+        for song in songs.currentSongList:
+            db_functs.addSongToTable(song=song, table=playlist)
+        self.loadPlaylists()
+
+    def addCurrentSongToPLaylist(self):
+        if not self.player.state() == QMediaPlayer.PlayingState:
+            QMessageBox.information(
+                self, "Add current song to playlist", "No song is playing"
+            )
+        options = db_functs.getPlaylistTables()
+        options.remove('favourites')
+        options.insert(0, '--Click to Select--')
+        playlist, _ = PyQt5.QtWidgets.QInputDialog.getItem(
+            self, 'Add song to playlist',
+            'Choose playlist', options, editable=False
+        )
+        if playlist == '--Click to Select--':
+            QMessageBox.information(
+                self, "Add song to playlist" 'No playlist was selected'
+            )
+            return
+        currentMedia = self.player.media()
+        song = currentMedia.canonicalUrl().path()[1:]
+        db_functs.addSongToTable(song=song, table=playlist)
+        self.loadPlaylists()
+
+    def loadPlaylistSongToCurrentList(self, playlist):
+        try:
+            playlistSongs = db_functs.fetchAllSongsFromTable(playlist)
+            if len(playlistSongs) == 0:
+                QMessageBox.information(
+                    self, 'Load playlist song', 'Playlist is empty'
+                )
+                return
+            self.loadedSong_listWidget.clear()
+            for song in playlistSongs:
+                songs.currentSongList.append(song)
+                self.loadedSong_listWidget.addItem(
+                    QListWidgetItem(
+                        QIcon(":/img/utils/images/dialog-music.png"),
+                        os.path.basename(song)
+                    )
+                )
+        except Exception as e:
+            print(f"Loading songs from playlist error:{e}")
