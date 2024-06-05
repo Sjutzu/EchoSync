@@ -241,16 +241,23 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
             print(f"Next Song error: {e}")
     def loopedSong(self):
         try:
-            songIndex = self.loadedSong_listWidget.currentRow()
-            nextIndex = songIndex
-            nextSong = songs.currentSongList[nextIndex]
-            currentMedia = self.player.media()
+            if self.stackedWidget.currentIndex() == 0:
+                songIndex = self.loadedSong_listWidget.currentRow()
+                nextIndex = songIndex
+                nextSong = songs.currentSongList[nextIndex]
+                currentMedia = self.player.media()
+                self.loadedSong_listWidget.setCurrentRow(nextIndex)
+            elif self.stackedWidget.currentIndex() == 2:
+                songIndex = self.favouritesSong_listWidget.currentRow()
+                nextIndex = songIndex
+                nextSong = songs.favouriteSongsList[nextIndex]
+                currentMedia = self.player.media()
+                self.favouritesSong_listWidget.setCurrentRow(nextIndex)
 
             songUrl = QMediaContent(QUrl.fromLocalFile(nextSong))
 
             self.player.setMedia(songUrl)
             self.player.play()
-            self.loadedSong_listWidget.setCurrentRow(nextIndex)
             self.playStop_btn.setIcon(
                 QIcon(":/img/utils/images/play.png"))  # Update the button icon to indicate playback
             audiofile = eyed3.load(currentMedia.canonicalUrl().path()[1:])
@@ -263,18 +270,27 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
             print(f"Looping song error {e}")
     def shuffleSong(self):
         try:
-            songIndex = self.loadedSong_listWidget.currentRow()
-            nextIndex = random.randint(0,len(songs.currentSongList))
-            while(songIndex == nextIndex):
-                nextIndex = random.randint(0, len(songs.currentSongList))
-            nextSong = songs.currentSongList[nextIndex]
-            currentMedia = self.player.media()
+            if self.stackedWidget.currentIndex() == 0:
+                songIndex = self.loadedSong_listWidget.currentRow()
+                nextIndex = random.randint(0,len(songs.currentSongList))
+                while(songIndex == nextIndex):
+                    nextIndex = random.randint(0, len(songs.currentSongList))
+                nextSong = songs.currentSongList[nextIndex]
+                currentMedia = self.player.media()
+                self.loadedSong_listWidget.setCurrentRow(nextIndex)
+            elif self.stackedWidget.currentIndex() == 2:
+                songIndex = self.favouritesSong_listWidget.currentRow()
+                nextIndex = random.randint(0,len(songs.favouriteSongsList))
+                while(songIndex == nextIndex):
+                    nextIndex = random.randint(0, len(songs.favouriteSongsList))
+                nextSong = songs.favouriteSongsList[nextIndex]
+                currentMedia = self.player.media()
+                self.favouritesSong_listWidget.setCurrentRow(nextIndex)
 
             songUrl = QMediaContent(QUrl.fromLocalFile(nextSong))
 
             self.player.setMedia(songUrl)
             self.player.play()
-            self.loadedSong_listWidget.setCurrentRow(nextIndex)
             self.playStop_btn.setIcon(
                 QIcon(":/img/utils/images/play.png"))  # Update the button icon to indicate playback
             audiofile = eyed3.load(currentMedia.canonicalUrl().path()[1:])
