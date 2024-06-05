@@ -23,6 +23,7 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
 
         #Database
         db_functs.createDBorTable('favourites')
+        self.loadFavouritesInToApp()
         #self Player
         self.player = QMediaPlayer()
         #removing title bar
@@ -328,8 +329,17 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
         if status == QMediaPlayer.EndOfMedia:
             self.nextSong()
 
-    #Favourite page
+    #FAVOURITE DATABASE
 
+    #load songs from database
+    def loadFavouritesInToApp(self):
+        favouriteSongs = db_functs.fetchAllSongsFromTable('favourites')
+        #songs.favouriteSongsList.clear()
+        #self.favouritesSong_listWidget.clear()
+
+        for favourite in favouriteSongs:
+            songs.favouriteSongsList.append(favourite)
+            self.favouritesSong_listWidget.addItem(os.path.basename(favourite))
     #add song
     def addSongToFavourites(self):
         currentIndex = self.loadedSong_listWidget.currentRow()

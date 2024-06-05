@@ -1,1 +1,2 @@
 currentSongList = []
+favouriteSongsList = []
