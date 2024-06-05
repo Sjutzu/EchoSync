@@ -24,6 +24,7 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
         #Database
         db_functs.createDBorTable('favourites')
         self.loadFavouritesInToApp()
+        self.loadPlaylists()
         #self Player
         self.player = QMediaPlayer()
         #removing title bar
@@ -84,6 +85,9 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
         self.addFavourites_btn.clicked.connect(self.addSongToFavourites)
         self.deleteSelected_btn.clicked.connect(self.removeSongFromFavourites)
         self.clearAll_btn_.clicked.connect(self.removeAllSongFromFavourites)
+
+        #playlists
+        self.newPlaylist_btn.clicked.connect(self.newPlaylist)
 
         self.show()
     # getting location of coursor when some of the mouse button is clicked
@@ -446,6 +450,16 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
                 print(f"Removin all songs from favourites error {e}")
 
     #PLAYLIST FUNCTIONS
+    def loadPlaylists(self):
+        playlists = db_functs.getPlaylistTables()
+        playlists.remove('favourites')
+        self.playlist_listWidget.clear()
+        for playlist in playlists:
+            self.playlist_listWidget.addItem(
+                QListWidgetItem(
+                    QIcon(":/img/utils/images/dialog-music.png"), playlist
+                )
+            )
     def newPlaylist(self):
         try:
             existing = db_functs.getPlaylistTables()
@@ -458,7 +472,7 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
             else:
                 if name not in existing:
                     db_functs.createDBorTable(f'{name}')
-                 #   self.loadPlaylists()
+                    self.loadPlaylists()
                 elif name in existing:
                     caution = QMessageBox.question(
                         self, 'Replace Playlist','A playlist with that name already exists \n Do you want to replace this playlist with empty one?',
@@ -467,7 +481,35 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
                     if caution == QMessageBox.Yes:
                         db_functs.deleteTable(f'{name}')
                         db_functs.createDBorTable(f'{name}')
-                        #self.loadPlaylists()
+                        self.loadPlaylists()
 
         except Exception as e:
             print(f"Creating a new playlist error: {e}")
+
+    def deletePlaylist(self):
+        playlist = self.playlist_listWidget.currentItem().text()
+        try:
+            db_functs.deleteTable(playlist)
+        except Exception as e:
+            print(f'Deleting playlist error {e}')
+        finally:
+            self.loadPlaylists()
+
+    def deleteAllPlaylist(self):
+        playlists = db_functs.getPlaylistTables()
+        playlists.remove('favourites')
+        question = QMessageBox.question(
+            self, "Remove all playlists",
+            'This will remove all songs \n Are u sure?',
+            QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel
+        )
+        if question == QMessageBox.Yes:
+            try:
+                for playlist in playlists:
+                    db_functs.deleteTable(playlist)
+            except Exception as e:
+                print(f'Removing all playlists error: {e}')
+
+            finally:
+                self.loadPlaylists()
+
