@@ -8,7 +8,7 @@ from music import Ui_MusicApp
 from PyQt5.QtCore import Qt, QUrl, QTimer
 import songs, eyed3, random
 import db_functs
-
+import PyQt5.QtWidgets
 
 class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
     def __init__(self):
@@ -444,3 +444,30 @@ class EchoSyncPlayer(QMainWindow, Ui_MusicApp):
                 self.loadFavouritesInToApp()
             except Exception as e:
                 print(f"Removin all songs from favourites error {e}")
+
+    #PLAYLIST FUNCTIONS
+    def newPlaylist(self):
+        try:
+            existing = db_functs.getPlaylistTables()
+            name, _ = PyQt5.QtWidgets.QInputDialog.getText(
+                self, 'Create a new playlist',
+                'Enter a Playlist name'
+            )
+            if name.strip() == '':
+                QMessageBox.information(self,'Name Error', 'Playlist cannot be empty')
+            else:
+                if name not in existing:
+                    db_functs.createDBorTable(f'{name}')
+                 #   self.loadPlaylists()
+                elif name in existing:
+                    caution = QMessageBox.question(
+                        self, 'Replace Playlist','A playlist with that name already exists \n Do you want to replace this playlist with empty one?',
+                        'Are u sure??', QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel
+                    )
+                    if caution == QMessageBox.Yes:
+                        db_functs.deleteTable(f'{name}')
+                        db_functs.createDBorTable(f'{name}')
+                        #self.loadPlaylists()
+
+        except Exception as e:
+            print(f"Creating a new playlist error: {e}")
